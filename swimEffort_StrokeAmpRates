@@ -1,15 +1,18 @@
 swimEffort_StrokeAmpRates <- function (x, fs = 16, fc = c(0.49, 2.05), strokeThres = 0.2) 
+
+#########################################################
 ## Method to estimate swimming effort at 1 second intervals based on sum of peaks and troughs of y-axis acceleration signal.
-## Based on 
+## Based on: 
     # - Sato, K., Y. Mitani, M. F. Cameron, D. B. Siniff, and Y. Naito. 2003. Factors affecting stroking patterns and body angle in diving Weddell seals under natural conditions. J. Exp. Biol. 206: 1461–1470.
     # - Richard, G., J. Vacquie-Garcia, J. Jouma’a, B. Picard, A. Génin, J. P. Y. Arnould, F. Bailleul, and C. Guinet. 2014. Variation in body condition during the post-moult foraging trip of southern elephant seals and its consequences on diving behaviour. J. Exp. Biol. 217: 2609–2619.
 
 ## x = data.table object containing c("time", "ax", "ay", "az", "segementID").
-          ## - where segmentID identifies continuous time segments.
-          ## - where time is denoted in 1 second blocks/groupings.
+          # - where segmentID identifies continuous time segments.
+          # - where time is denoted in 1 second blocks/groupings.
 ## fs = sampling frequency of signal (default is 16Hz).
 ## fc = frequencies between which stroke amplitudes/rates are isolated from y-axis.  Based on 2nd peak in power density spectrums.
 ## strokeThres - signal amplitude (between peaks and troughs) below which movements are assumed not be be associated with swimming and so excluded from estimates.
+#########################################################
 
 {
   stopifnot(require("data.table"))
