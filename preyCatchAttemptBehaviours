@@ -6,7 +6,7 @@ preyCatchAttemptBehaviours <- function (x, x2, fs = 16, fc = 2.64, timeDays = 0)
     # - Viviant, M., A. W. Trites, D. A. S. Rosen, P. Monestiez, and C. Guinet. 2010. Prey capture attempts can be detected in Steller sea lions and other marine predators using accelerometers. Polar Biol. 33: 713–719.
 
 ## x = data.table object containing c("time", "ax", "ay", "az", "segementID").
-    # - where time is denoted in 1 second blocks/groupings.
+    # - where time is denoted in 1 second blocks/groupings as posixct.
 ## x2 = segmentID identifying continuous time segments.
 ## fs = sampling frequency of signal (default is 16Hz).
 ## fc = frequency above which signals across x, y and z axes are retained. 
