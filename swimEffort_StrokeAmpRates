@@ -1,0 +1,42 @@
+swimEffort_StrokeAmpRates <- function (x, fs = 16, fc = c(0.49, 2.05), strokeThres = 0.2) 
+## Method to estimate swimming effort at 1 second intervals based on sum of peaks and troughs of y-axis acceleration signal.
+## Based on 
+    # - Sato, K., Y. Mitani, M. F. Cameron, D. B. Siniff, and Y. Naito. 2003. Factors affecting stroking patterns and body angle in diving Weddell seals under natural conditions. J. Exp. Biol. 206: 1461–1470.
+    # - Richard, G., J. Vacquie-Garcia, J. Jouma’a, B. Picard, A. Génin, J. P. Y. Arnould, F. Bailleul, and C. Guinet. 2014. Variation in body condition during the post-moult foraging trip of southern elephant seals and its consequences on diving behaviour. J. Exp. Biol. 217: 2609–2619.
+
+## x = data.table object containing c("time", "ax", "ay", "az", "segementID").
+          ## - where segmentID identifies continuous time segments.
+          ## - where time is denoted in 1 second blocks/groupings.
+## fs = sampling frequency of signal (default is 16Hz).
+## fc = frequencies between which stroke amplitudes/rates are isolated from y-axis.  Based on 2nd peak in power density spectrums.
+## strokeThres - signal amplitude (between peaks and troughs) below which movements are assumed not be be associated with swimming and so excluded from estimates.
+
+{
+  stopifnot(require("data.table"))
+  stopifnot(require("signal"))
+  bf_swm <- butter(3, W = fc/(0.5 * fs), type = "pass")
+  if (!is.data.table(x)) 
+    x <- data.table(x, key = "time")
+  x <- x[, `:=`(ay, as.numeric(filtfilt(bf_swm, ay))), by = assignedSegID]
+  x <- x[, `:=`(c(2, 4), NULL), with = FALSE]
+  
+  x <- x[, `:=`(refX, c(0,diff(sign(diff(ay))), 0))]
+  
+  diffX <- copy(x)
+  diffX <- diffX[, `:=`(ID, 1:nrow(diffX))]
+  diffX <- diffX[refX != 0]
+  
+  diffX <- diffX[, `:=`(strInt, abs(c(diff(ay), NA))), by = assignedSegID]
+  
+  x <- x[, `:=`(diffAcc, 0)]
+  x <- x[diffX$ID, `:=`(diffAcc, diffX$strInt)]
+  
+  x <- x[which(refX == 0 | diffAcc < strokeThres), `:=`(ay, 0)]
+  x <- x[, `:=`(refX, NULL)]
+  x <- x[, `:=`(diffAcc, NULL)]
+  x <- x[, `:=`(assignedSegID, NULL)]
+  
+  x <- x[, lapply(.SD, function(x) sum(abs(x), na.rm = TRUE)), by = time]
+  x <- x$ay
+  
+}
