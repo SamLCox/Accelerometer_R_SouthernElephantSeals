@@ -8,7 +8,7 @@ swimEffort_StrokeAmpRates <- function (x, fs = 16, fc = c(0.49, 2.05), strokeThr
 
 ## x = data.table object containing c("time", "ax", "ay", "az", "segementID").
           # - where segmentID identifies continuous time segments.
-          # - where time is denoted in 1 second blocks/groupings.
+          # - where time is denoted in 1 second blocks/groupings as posixct.
 ## fs = sampling frequency of signal (default is 16Hz).
 ## fc = frequencies between which stroke amplitudes/rates are isolated from y-axis.  Based on 2nd peak in power density spectrums.
 ## strokeThres - signal amplitude (between peaks and troughs) below which movements are assumed not be be associated with swimming and so excluded from estimates.
